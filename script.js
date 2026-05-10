@@ -11,6 +11,7 @@ const rewardModal = document.getElementById('rewardModal');
 const closeModalBtn = document.getElementById('closeModalBtn');
 const viewRewardBtn = document.getElementById('viewRewardBtn');
 const rewardActionArea = document.getElementById('rewardActionArea');
+const resetBtn = document.getElementById('resetBtn');
 
 // Saat formatlayıcı
 function getCurrentTime() {
@@ -142,6 +143,41 @@ closeModalBtn.addEventListener('click', () => {
 if (viewRewardBtn) {
     viewRewardBtn.addEventListener('click', () => {
         rewardModal.classList.add('show');
+    });
+}
+
+// İşlemleri Sıfırlama
+if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+        if (confirm('Tüm ilerlemeyi ve geçmişi sıfırlamak istediğinize emin misiniz?')) {
+            // Verileri sıfırla
+            currentStamps = 0;
+            activities = [];
+            localStorage.removeItem('milesteenStamps');
+            localStorage.removeItem('milesteenActivities');
+            
+            // Arayüzü sıfırla (Damga, progress bar)
+            currentStampsEl.textContent = '0';
+            stampProgressEl.style.width = '0%';
+            
+            for (let i = 1; i <= maxStamps; i++) {
+                const stampSlot = document.getElementById(`stamp${i}`);
+                if (stampSlot) {
+                    stampSlot.classList.remove('filled');
+                    stampSlot.style.animation = 'none';
+                }
+            }
+            
+            // Butonları ve ödül alanını sıfırla
+            rewardActionArea.style.display = 'none';
+            simulateBtn.textContent = "NFC Okutmayı Simüle Et";
+            simulateBtn.disabled = false;
+            simulateBtn.style.opacity = "1";
+            
+            // Logları temizle ve sıfırlama logu ekle
+            activityListEl.innerHTML = '';
+            addActivityLog("Sistem sıfırlandı. Yeni hesap oluşturuldu.", false, true);
+        }
     });
 }
 
