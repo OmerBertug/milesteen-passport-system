@@ -81,10 +81,9 @@ function renderOwnedRewards() {
         
         let icon = '';
         let name = '';
-        if (reward.type === 'starbucks') { icon = '☕'; name = 'Starbucks Kahve'; }
+        if (reward.type === 'starbucks') { icon = '<img src="https://upload.wikimedia.org/wikipedia/en/d/d3/Starbucks_Corporation_Logo_2011.svg" style="width:24px;height:24px;object-fit:contain;">'; name = 'Starbucks Kahve'; }
         else if (reward.type === 'cigkofte') { icon = '🌯'; name = 'Ömer Aybak Çiğköfte'; }
-        else if (reward.type === 'pizza') { icon = '🍕'; name = "Hero's Pizza"; }
-        else if (reward.type === 'starbucks3') { icon = '☕☕☕'; name = '3x Starbucks'; }
+        else if (reward.type === 'pizza') { icon = '<img src="https://cdn-icons-png.flaticon.com/512/1404/1404945.png" style="width:24px;height:24px;object-fit:contain;">'; name = "Hero's Pizza"; }
         
         div.innerHTML = `
             <div style="display: flex; align-items: center; gap: 0.5rem;">
@@ -142,7 +141,7 @@ function showRewardModal(type, isNew = true) {
     let descPrefix = isNew ? "Tebrikler," : "Sahip olduğunuz";
     
     if (type === 'starbucks') {
-        modalIcon.innerHTML = '☕';
+        modalIcon.innerHTML = '<img src="https://upload.wikimedia.org/wikipedia/en/d/d3/Starbucks_Corporation_Logo_2011.svg" style="width:60px;">';
         modalDesc.innerHTML = `${descPrefix} <strong>Starbucks Hediye Kahve</strong> kullanabilirsiniz!`;
         modalQr.src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=StarbucksReward';
     } else if (type === 'cigkofte') {
@@ -150,13 +149,9 @@ function showRewardModal(type, isNew = true) {
         modalDesc.innerHTML = `${descPrefix} <strong>Ömer Aybak Çiğköfte Dürüm</strong> kullanabilirsiniz!`;
         modalQr.src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OmerAybakReward';
     } else if (type === 'pizza') {
-        modalIcon.innerHTML = '🍕';
+        modalIcon.innerHTML = '<img src="https://cdn-icons-png.flaticon.com/512/1404/1404945.png" style="width:60px;">';
         modalDesc.innerHTML = `${descPrefix} <strong>Hero's Pizza Orta Boy Menü</strong> kullanabilirsiniz!`;
         modalQr.src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=HerosPizzaReward';
-    } else if (type === 'starbucks3') {
-        modalIcon.innerHTML = '☕☕☕';
-        modalDesc.innerHTML = `${descPrefix} <strong>3 Adet Starbucks Kahve</strong> kullanabilirsiniz!`;
-        modalQr.src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=Starbucks3xReward';
     }
     
     document.querySelector('#rewardModal h2').textContent = title;
@@ -200,7 +195,6 @@ redeemBtns.forEach(btn => {
             if (type === 'starbucks') rewardName = 'Starbucks Kahve';
             if (type === 'cigkofte') rewardName = 'Ömer Aybak Çiğköfte';
             if (type === 'pizza') rewardName = "Hero's Pizza";
-            if (type === 'starbucks3') rewardName = '3x Starbucks';
             
             addActivityLog(`${cost} Puan harcanarak "${rewardName}" satın alındı!`, true);
             showRewardModal(type, true);
