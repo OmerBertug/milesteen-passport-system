@@ -1,21 +1,20 @@
-let currentStamps = parseInt(localStorage.getItem('milesteenStamps')) || 0;
-const maxStamps = 5;
+let currentPoints = parseInt(localStorage.getItem('milesteenPoints')) || 0;
 let activities = JSON.parse(localStorage.getItem('milesteenActivities')) || [];
+let ownedRewards = JSON.parse(localStorage.getItem('milesteenRewards')) || [];
 
-const currentStampsEl = document.getElementById('currentStamps');
-const stampProgressEl = document.getElementById('stampProgress');
+const currentPointsEl = document.getElementById('currentPoints');
 const activityListEl = document.getElementById('activityList');
 const simulateBtn = document.getElementById('simulateNfcBtn');
 const toast = document.getElementById('toast');
 const rewardModal = document.getElementById('rewardModal');
 const closeModalBtn = document.getElementById('closeModalBtn');
-const viewStarbucksBtn = document.getElementById('viewStarbucksBtn');
-const viewCigkofteBtn = document.getElementById('viewCigkofteBtn');
-const rewardActionArea = document.getElementById('rewardActionArea');
 const resetBtn = document.getElementById('resetBtn');
 const modalIcon = document.getElementById('modalIcon');
 const modalDesc = document.getElementById('modalDesc');
 const modalQr = document.getElementById('modalQr');
+const redeemBtns = document.querySelectorAll('.redeem-btn');
+const ownedRewardsArea = document.getElementById('ownedRewardsArea');
+const ownedRewardsList = document.getElementById('ownedRewardsList');
 
 // Saat formatlayıcı
 function getCurrentTime() {
@@ -57,10 +56,8 @@ function renderSavedActivities() {
     activityListEl.innerHTML = ''; 
     
     if (activities.length === 0) {
-        // İlk kez giriyorsa varsayılan log
         addActivityLog("Hesap oluşturuldu ve doğrulandı.", false, true);
     } else {
-        // Tersten ekliyoruz ki sıralama korunsun
         const rev = [...activities].reverse();
         rev.forEach(act => {
             addActivityLog(act.message, act.isPositive, false, act.time);
@@ -68,32 +65,67 @@ function renderSavedActivities() {
     }
 }
 
+// Kazanılan ödülleri listele
+function renderOwnedRewards() {
+    if (ownedRewards.length === 0) {
+        ownedRewardsArea.style.display = 'none';
+        return;
+    }
+    
+    ownedRewardsArea.style.display = 'block';
+    ownedRewardsList.innerHTML = '';
+    
+    ownedRewards.forEach((reward, index) => {
+        const div = document.createElement('div');
+        div.style = "border: 1px solid var(--border-color); border-radius: 8px; padding: 0.75rem 1rem; display: flex; justify-content: space-between; align-items: center; background: #f9fafb;";
+        
+        let icon = '';
+        let name = '';
+        if (reward.type === 'starbucks') { icon = '☕'; name = 'Starbucks Kahve'; }
+        else if (reward.type === 'cigkofte') { icon = '🌯'; name = 'Ömer Aybak Çiğköfte'; }
+        else if (reward.type === 'pizza') { icon = '🍕'; name = "Hero's Pizza"; }
+        else if (reward.type === 'starbucks3') { icon = '☕☕☕'; name = '3x Starbucks'; }
+        
+        div.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span style="font-size: 1.2rem;">${icon}</span>
+                <span style="font-size: 0.9rem; font-weight: 600; color: var(--primary-color);">${name}</span>
+            </div>
+            <button class="view-qr-btn" data-type="${reward.type}" style="background: none; border: 1px solid var(--accent-color); color: var(--accent-color); padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.75rem; cursor: pointer; font-weight: 600;">QR Göster</button>
+        `;
+        ownedRewardsList.appendChild(div);
+    });
+    
+    // Butonlara event listener ekle
+    document.querySelectorAll('.view-qr-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            showRewardModal(e.target.dataset.type, false);
+        });
+    });
+}
+
+// Butonların durumunu güncelle
+function updateStoreButtons() {
+    redeemBtns.forEach(btn => {
+        const cost = parseInt(btn.dataset.cost);
+        if (currentPoints >= cost) {
+            btn.style.opacity = '1';
+            btn.style.cursor = 'pointer';
+            btn.disabled = false;
+        } else {
+            btn.style.opacity = '0.5';
+            btn.style.cursor = 'not-allowed';
+            btn.disabled = true;
+        }
+    });
+}
+
 // Sayfa yüklendiğinde UI'ı ayarla
 function initUI() {
-    currentStampsEl.textContent = currentStamps;
-    stampProgressEl.style.width = `${(currentStamps / maxStamps) * 100}%`;
-    
-    for (let i = 1; i <= currentStamps; i++) {
-        const stampSlot = document.getElementById(`stamp${i}`);
-        if (stampSlot) {
-            stampSlot.classList.add('filled');
-            stampSlot.style.animation = 'none'; // Sayfa yüklenirken pop efekti olmasın
-        }
-    }
-    
-    if (currentStamps >= 2) {
-        rewardActionArea.style.display = 'flex';
-        viewStarbucksBtn.style.display = 'block';
-    }
-    
-    if (currentStamps >= 5) {
-        viewCigkofteBtn.style.display = 'block';
-        simulateBtn.textContent = "Tüm Görevler Tamamlandı";
-        simulateBtn.disabled = true;
-        simulateBtn.style.opacity = "0.5";
-    }
-    
+    currentPointsEl.textContent = currentPoints;
+    updateStoreButtons();
     renderSavedActivities();
+    renderOwnedRewards();
 }
 
 // Toast gösterme
@@ -105,66 +137,75 @@ function showToast() {
 }
 
 // Dinamik Modal Gösterimi
-function showRewardModal(type) {
+function showRewardModal(type, isNew = true) {
+    let title = isNew ? "Tebrikler!" : "Ödülünüz";
+    let descPrefix = isNew ? "Tebrikler," : "Sahip olduğunuz";
+    
     if (type === 'starbucks') {
-        modalIcon.innerHTML = '<img src="https://upload.wikimedia.org/wikipedia/en/d/d3/Starbucks_Corporation_Logo_2011.svg" style="width: 60px;">';
-        modalDesc.innerHTML = '2 damgaya ulaştınız ve <strong>Starbucks Hediye Kahve</strong> kazandınız!';
+        modalIcon.innerHTML = '☕';
+        modalDesc.innerHTML = `${descPrefix} <strong>Starbucks Hediye Kahve</strong> kullanabilirsiniz!`;
         modalQr.src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=StarbucksReward';
     } else if (type === 'cigkofte') {
         modalIcon.innerHTML = '🌯';
-        modalDesc.innerHTML = '5 damgaya ulaştınız ve <strong>Ömer Aybak Çiğköfte Dürüm</strong> kazandınız!';
+        modalDesc.innerHTML = `${descPrefix} <strong>Ömer Aybak Çiğköfte Dürüm</strong> kullanabilirsiniz!`;
         modalQr.src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OmerAybakReward';
+    } else if (type === 'pizza') {
+        modalIcon.innerHTML = '🍕';
+        modalDesc.innerHTML = `${descPrefix} <strong>Hero's Pizza Orta Boy Menü</strong> kullanabilirsiniz!`;
+        modalQr.src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=HerosPizzaReward';
+    } else if (type === 'starbucks3') {
+        modalIcon.innerHTML = '☕☕☕';
+        modalDesc.innerHTML = `${descPrefix} <strong>3 Adet Starbucks Kahve</strong> kullanabilirsiniz!`;
+        modalQr.src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=Starbucks3xReward';
     }
+    
+    document.querySelector('#rewardModal h2').textContent = title;
     rewardModal.classList.add('show');
 }
 
-// NFC Okutma Simülasyonu
+// NFC Okutma Simülasyonu (Puan Kazanma)
 simulateBtn.addEventListener('click', () => {
-    if (currentStamps < maxStamps) {
-        currentStamps++;
-        localStorage.setItem('milesteenStamps', currentStamps);
-        
-        // Arayüzü güncelle
-        currentStampsEl.textContent = currentStamps;
-        stampProgressEl.style.width = `${(currentStamps / maxStamps) * 100}%`;
-        
-        // Damga görselini aktif et
-        const stampSlot = document.getElementById(`stamp${currentStamps}`);
-        if (stampSlot) {
-            stampSlot.classList.add('filled');
-            stampSlot.style.animation = ''; // Animasyonu çalıştır
-        }
-        
-        // Log ve Bildirim
-        addActivityLog("Galatasaray Lisesi'nde NFC cihazı ile okutuldu. +1 Damga", true);
-        showToast();
+    currentPoints++;
+    localStorage.setItem('milesteenPoints', currentPoints);
+    
+    // Arayüzü güncelle
+    currentPointsEl.textContent = currentPoints;
+    updateStoreButtons();
+    
+    // Log ve Bildirim
+    addActivityLog("Galatasaray Lisesi'nde NFC cihazı ile okutuldu. +1 Puan", true);
+    showToast();
+});
 
-        // Ödül kontrolü: Starbucks
-        if (currentStamps === 2) {
-            setTimeout(() => {
-                showRewardModal('starbucks');
-                addActivityLog("Ödül Kazanıldı: Starbucks Kahve!", true);
-                
-                rewardActionArea.style.display = 'flex';
-                viewStarbucksBtn.style.display = 'block';
-            }, 1000);
-        }
+// Mağaza Satın Alma İşlemleri
+redeemBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        const cost = parseInt(btn.dataset.cost);
+        const type = btn.dataset.type;
         
-        // Ödül kontrolü: Çiğköfte
-        if (currentStamps === 5) {
-            setTimeout(() => {
-                showRewardModal('cigkofte');
-                addActivityLog("Ödül Kazanıldı: Ömer Aybak Çiğköfte!", true);
-                
-                viewCigkofteBtn.style.display = 'block';
-                
-                // Simülasyon butonunu devre dışı bırak
-                simulateBtn.textContent = "Tüm Görevler Tamamlandı";
-                simulateBtn.disabled = true;
-                simulateBtn.style.opacity = "0.5";
-            }, 1000);
+        if (currentPoints >= cost) {
+            // Puanı Düş
+            currentPoints -= cost;
+            localStorage.setItem('milesteenPoints', currentPoints);
+            currentPointsEl.textContent = currentPoints;
+            updateStoreButtons();
+            
+            // Ödülü Ekle
+            ownedRewards.push({ type: type, date: new Date().toISOString() });
+            localStorage.setItem('milesteenRewards', JSON.stringify(ownedRewards));
+            renderOwnedRewards();
+            
+            // Modal'ı Göster ve Log Ekle
+            let rewardName = '';
+            if (type === 'starbucks') rewardName = 'Starbucks Kahve';
+            if (type === 'cigkofte') rewardName = 'Ömer Aybak Çiğköfte';
+            if (type === 'pizza') rewardName = "Hero's Pizza";
+            if (type === 'starbucks3') rewardName = '3x Starbucks';
+            
+            addActivityLog(`${cost} Puan harcanarak "${rewardName}" satın alındı!`, true);
+            showRewardModal(type, true);
         }
-    }
+    });
 });
 
 // Modal Kapatma
@@ -172,48 +213,23 @@ closeModalBtn.addEventListener('click', () => {
     rewardModal.classList.remove('show');
 });
 
-// Kazanılan Ödülleri Tekrar Açma
-if (viewStarbucksBtn) {
-    viewStarbucksBtn.addEventListener('click', () => {
-        showRewardModal('starbucks');
-    });
-}
-if (viewCigkofteBtn) {
-    viewCigkofteBtn.addEventListener('click', () => {
-        showRewardModal('cigkofte');
-    });
-}
-
 // İşlemleri Sıfırlama
 if (resetBtn) {
     resetBtn.addEventListener('click', () => {
-        if (confirm('Tüm ilerlemeyi ve geçmişi sıfırlamak istediğinize emin misiniz?')) {
+        if (confirm('Tüm ilerlemeyi, kazanılan puanları ve ödülleri sıfırlamak istediğinize emin misiniz?')) {
             // Verileri sıfırla
-            currentStamps = 0;
+            currentPoints = 0;
             activities = [];
-            localStorage.removeItem('milesteenStamps');
+            ownedRewards = [];
+            localStorage.removeItem('milesteenPoints');
             localStorage.removeItem('milesteenActivities');
+            localStorage.removeItem('milesteenRewards');
+            localStorage.removeItem('milesteenStamps'); // Eski sistemi temizlemek için
             
-            // Arayüzü sıfırla (Damga, progress bar)
-            currentStampsEl.textContent = '0';
-            stampProgressEl.style.width = '0%';
-            
-            for (let i = 1; i <= maxStamps; i++) {
-                const stampSlot = document.getElementById(`stamp${i}`);
-                if (stampSlot) {
-                    stampSlot.classList.remove('filled');
-                    stampSlot.style.animation = 'none';
-                }
-            }
-            
-            // Butonları ve ödül alanını sıfırla
-            rewardActionArea.style.display = 'none';
-            viewStarbucksBtn.style.display = 'none';
-            viewCigkofteBtn.style.display = 'none';
-            
-            simulateBtn.textContent = "NFC Okutmayı Simüle Et";
-            simulateBtn.disabled = false;
-            simulateBtn.style.opacity = "1";
+            // Arayüzü sıfırla
+            currentPointsEl.textContent = '0';
+            updateStoreButtons();
+            renderOwnedRewards();
             
             // Logları temizle ve sıfırlama logu ekle
             activityListEl.innerHTML = '';

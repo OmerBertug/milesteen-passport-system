@@ -46,42 +46,59 @@
             </div>
         </section>
 
-        <!-- Damga (Stamp) Sistemi -->
+        <!-- Puan (Coin) Sistemi -->
         <section class="rewards-section">
-            <h3 class="section-title">Milesteen Ayrıcalıkları</h3>
+            <h3 class="section-title">Milesteen Mağazası</h3>
             
-            <div class="reward-box">
-                <div class="reward-header">
-                    <div class="reward-info">
-                        <h4>Milesteen Hedefleri</h4>
-                        <p style="margin-top: 5px; display: flex; align-items: center; gap: 5px;">
-                            <img src="https://upload.wikimedia.org/wikipedia/en/d/d3/Starbucks_Corporation_Logo_2011.svg" alt="Starbucks" style="width: 16px;"> 2 Damga: Starbucks Kahve
-                        </p>
-                        <p style="margin-top: 3px; display: flex; align-items: center; gap: 5px;">
-                            <span>🌯</span> 5 Damga: Ömer Aybak Çiğköfte
-                        </p>
+            <div class="reward-box" style="margin-bottom: 1.5rem; text-align: center;">
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem;">Mevcut Puanınız</p>
+                <div style="font-size: 3rem; font-weight: 800; color: var(--accent-color); line-height: 1;">
+                    <span id="currentPoints">0</span> <span style="font-size: 1.5rem;">Puan</span>
+                </div>
+            </div>
+            
+            <div class="store-items" style="display: flex; flex-direction: column; gap: 1rem;">
+                <!-- Item 1 -->
+                <div class="store-item" style="border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; display: flex; justify-content: space-between; align-items: center; background: #fff;">
+                    <div>
+                        <h4 style="font-size: 1rem; color: var(--primary-color);">☕ Starbucks Kahve</h4>
+                        <p style="font-size: 0.8rem; color: var(--text-muted);">1 Adet Kutu Kahve</p>
                     </div>
-                    <div class="reward-count">
-                        <span id="currentStamps">0</span> / 5
+                    <button class="btn-primary redeem-btn" data-cost="2" data-type="starbucks" style="width: auto; padding: 0.5rem 1rem; font-size: 0.85rem; border-radius: 6px; background-color: #00704A;">2 Puan</button>
+                </div>
+
+                <!-- Item 2 -->
+                <div class="store-item" style="border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; display: flex; justify-content: space-between; align-items: center; background: #fff;">
+                    <div>
+                        <h4 style="font-size: 1rem; color: var(--primary-color);">🌯 Ömer Aybak Çiğköfte</h4>
+                        <p style="font-size: 0.8rem; color: var(--text-muted);">1 Porsiyon Dürüm</p>
                     </div>
+                    <button class="btn-primary redeem-btn" data-cost="5" data-type="cigkofte" style="width: auto; padding: 0.5rem 1rem; font-size: 0.85rem; border-radius: 6px; background-color: #e63946;">5 Puan</button>
                 </div>
-                
-                <div class="progress-bar-container">
-                    <div class="progress-bar" id="stampProgress" style="width: 0%;"></div>
+
+                <!-- Item 3 -->
+                <div class="store-item" style="border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; display: flex; justify-content: space-between; align-items: center; background: #fff;">
+                    <div>
+                        <h4 style="font-size: 1rem; color: var(--primary-color);">🍕 Hero's Pizza</h4>
+                        <p style="font-size: 0.8rem; color: var(--text-muted);">Orta Boy Pizza Menü</p>
+                    </div>
+                    <button class="btn-primary redeem-btn" data-cost="5" data-type="pizza" style="width: auto; padding: 0.5rem 1rem; font-size: 0.85rem; border-radius: 6px; background-color: #f4a261;">5 Puan</button>
                 </div>
-                
-                <div class="stamps-visual">
-                    <div class="stamp-slot" id="stamp1"></div>
-                    <div class="stamp-slot" id="stamp2"></div>
-                    <div class="stamp-slot" id="stamp3"></div>
-                    <div class="stamp-slot" id="stamp4"></div>
-                    <div class="stamp-slot" id="stamp5"></div>
+
+                <!-- Item 4 -->
+                <div class="store-item" style="border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; display: flex; justify-content: space-between; align-items: center; background: #fff;">
+                    <div>
+                        <h4 style="font-size: 1rem; color: var(--primary-color);">☕☕☕ 3x Starbucks</h4>
+                        <p style="font-size: 0.8rem; color: var(--text-muted);">3 Adet Kahve (Avantajlı)</p>
+                    </div>
+                    <button class="btn-primary redeem-btn" data-cost="6" data-type="starbucks3" style="width: auto; padding: 0.5rem 1rem; font-size: 0.85rem; border-radius: 6px; background-color: #00704A;">6 Puan</button>
                 </div>
-                
-                <div id="rewardActionArea" style="display: none; margin-top: 1.5rem; text-align: center; flex-direction: column; gap: 0.5rem;">
-                    <button id="viewStarbucksBtn" class="btn-primary" style="width: 100%; font-size: 0.9rem; display: none; background-color: #00704A;">☕ Starbucks Ödülünü Göster</button>
-                    <button id="viewCigkofteBtn" class="btn-primary" style="width: 100%; font-size: 0.9rem; display: none; background-color: #e63946;">🌯 Çiğköfte Ödülünü Göster</button>
-                </div>
+            </div>
+            
+            <!-- Kazanılan Ödüllerim Bölümü -->
+            <div id="ownedRewardsArea" style="margin-top: 1.5rem; display: none;">
+                <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Kazanılan Ödüllerim</h4>
+                <div id="ownedRewardsList" style="display: flex; flex-direction: column; gap: 0.5rem;"></div>
             </div>
         </section>
 
@@ -101,7 +118,7 @@
 
         <!-- Simülasyon Butonu (Geliştirici Aracı) -->
         <div class="simulation-area">
-            <button id="simulateNfcBtn" class="btn-primary">NFC Okutmayı Simüle Et</button>
+            <button id="simulateNfcBtn" class="btn-primary">NFC Okutmayı Simüle Et (+1 Puan)</button>
             <p class="sim-note">Bu buton cihazı karta okuttuğunuz anı temsil eder.</p>
             <button id="resetBtn" class="btn-secondary" style="margin-top: 1.5rem; max-width: 300px; display: inline-block;">İşlemleri Sıfırla</button>
         </div>
@@ -116,7 +133,7 @@
         </svg>
         <div class="toast-content">
             <h4>Başarılı!</h4>
-            <p>Milesteen damgası eklendi.</p>
+            <p>1 Milesteen Puanı eklendi.</p>
         </div>
     </div>
 
