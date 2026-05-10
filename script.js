@@ -234,3 +234,51 @@ if (resetBtn) {
 
 // Sayfa başlarken
 initUI();
+
+// --- PWA (Progressive Web App) Kurulumu ---
+
+// Service Worker Kaydı
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+            .then(reg => console.log('Service Worker kaydedildi.', reg))
+            .catch(err => console.log('Service Worker kaydı başarısız:', err));
+    });
+}
+
+// Uygulamayı Yükle (Install Prompt) Mantığı
+let deferredPrompt;
+const installAppBanner = document.getElementById('installAppBanner');
+const installAppBtn = document.getElementById('installAppBtn');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Chrome'un otomatik uyarı göstermesini engelle
+    e.preventDefault();
+    // Olayı daha sonra tetiklemek üzere sakla
+    deferredPrompt = e;
+    // Yükleme banner'ını göster
+    if (installAppBanner) {
+        installAppBanner.style.display = 'block';
+    }
+});
+
+if (installAppBtn) {
+    installAppBtn.addEventListener('click', async () => {
+        if (installAppBanner) installAppBanner.style.display = 'none';
+        if (deferredPrompt) {
+            // Yükleme istemini göster
+            deferredPrompt.prompt();
+            // Kullanıcının yanıtını bekle
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`Kullanıcı yükleme istemini ${outcome === 'accepted' ? 'kabul etti' : 'reddetti'}`);
+            // deferredPrompt değişkenini sıfırla
+            deferredPrompt = null;
+        }
+    });
+}
+
+// Uygulama yüklendiğinde banner'ı gizle
+window.addEventListener('appinstalled', () => {
+    if (installAppBanner) installAppBanner.style.display = 'none';
+    console.log('PWA uygulaması yüklendi');
+});
