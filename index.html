@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Milesteen R&D | Kullanıcı Portalı</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    
+    <!-- Üst Menü / Header -->
+    <header class="header">
+        <div class="container header-content">
+            <div class="logo-area">
+                <h1 class="logo-main">TEINN</h1>
+                <span class="logo-sub">Milesteen R&D</span>
+            </div>
+            <div class="user-status">
+                <span class="status-dot"></span> Aktif Bağlantı
+            </div>
+        </div>
+    </header>
+
+    <main class="container main-content">
+        
+        <!-- NFC Kimlik Kartı Görünümü -->
+        <section class="id-card-section">
+            <div class="id-card">
+                <div class="card-header">
+                    <div class="chip"></div>
+                    <div class="nfc-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-2-12c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm4 4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h2 class="user-name">Ömer Bertuğ Tezel</h2>
+                    <p class="user-school">Galatasaray Lisesi</p>
+                    <p class="user-id">ID: MLSTN-2026-9812</p>
+                </div>
+                <div class="card-footer">
+                    <span>Resmi TEINN Katılımcısı</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Damga (Stamp) Sistemi -->
+        <section class="rewards-section">
+            <h3 class="section-title">Milesteen Ayrıcalıkları</h3>
+            
+            <div class="reward-box">
+                <div class="reward-header">
+                    <div class="reward-info">
+                        <h4>Starbucks Hediye Kahve</h4>
+                        <p>Her 2 katılımda 1 kahve hediye</p>
+                    </div>
+                    <div class="reward-count">
+                        <span id="currentStamps">0</span> / 2
+                    </div>
+                </div>
+                
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="stampProgress" style="width: 0%;"></div>
+                </div>
+                
+                <div class="stamps-visual">
+                    <div class="stamp-slot" id="stamp1"></div>
+                    <div class="stamp-slot" id="stamp2"></div>
+                </div>
+                
+                <div id="rewardActionArea" style="display: none; margin-top: 1.5rem; text-align: center;">
+                    <button id="viewRewardBtn" class="btn-primary" style="width: 100%; font-size: 0.9rem;">🎁 Kazanılan Ödülü Göster</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Aktivite Geçmişi -->
+        <section class="activity-section">
+            <h3 class="section-title">Son Aktiviteler</h3>
+            <ul class="activity-list" id="activityList">
+                <li class="activity-item">
+                    <div class="activity-icon">i</div>
+                    <div class="activity-details">
+                        <p class="activity-text">Hesap oluşturuldu ve doğrulandı.</p>
+                        <span class="activity-time">Bugün, 10:00</span>
+                    </div>
+                </li>
+            </ul>
+        </section>
+
+        <!-- Simülasyon Butonu (Geliştirici Aracı) -->
+        <div class="simulation-area">
+            <button id="simulateNfcBtn" class="btn-primary">NFC Okutmayı Simüle Et</button>
+            <p class="sim-note">Bu buton cihazı karta okuttuğunuz anı temsil eder.</p>
+        </div>
+
+    </main>
+
+    <!-- Bildirim (Toast) -->
+    <div id="toast" class="toast">
+        <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        <div class="toast-content">
+            <h4>Başarılı!</h4>
+            <p>Milesteen damgası eklendi.</p>
+        </div>
+    </div>
+
+    <!-- Ödül Kazanıldı Modal -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-icon">☕</div>
+            <h2>Tebrikler!</h2>
+            <p>2 damgaya ulaştınız ve <strong>Starbucks Hediye Kahve</strong> kazandınız!</p>
+            <div class="qr-placeholder">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=MilesteenReward" alt="Reward QR">
+                <p>Kasanıza bu kodu okutun.</p>
+            </div>
+            <button id="closeModalBtn" class="btn-secondary">Kapat</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
