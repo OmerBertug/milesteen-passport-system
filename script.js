@@ -82,8 +82,8 @@ function renderOwnedRewards() {
         let icon = '';
         let name = '';
         if (reward.type === 'starbucks') { icon = '<img src="https://upload.wikimedia.org/wikipedia/en/d/d3/Starbucks_Corporation_Logo_2011.svg" style="width:24px;height:24px;object-fit:contain;">'; name = 'Starbucks Kahve'; }
-        else if (reward.type === 'cigkofte') { icon = '🌯'; name = 'Ömer Aybak Çiğköfte'; }
-        else if (reward.type === 'pizza') { icon = '<img src="https://cdn-icons-png.flaticon.com/512/1404/1404945.png" style="width:24px;height:24px;object-fit:contain;">'; name = "Hero's Pizza"; }
+        else if (reward.type === 'cigkofte') { icon = '<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpnkRW3gYTHQ9uecrg9zp98GJKtf7P6rq4JQ&s" style="width:24px;height:24px;object-fit:contain;border-radius:4px;">'; name = 'Ömer Aybak Çiğköfte'; }
+        else if (reward.type === 'pizza') { icon = '<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLYRs4DEfpobJ8frhUSG3Bej0_iWbWASEnnw&s" style="width:24px;height:24px;object-fit:contain;border-radius:4px;">'; name = "Hero's Pizza"; }
         
         div.innerHTML = `
             <div style="display: flex; align-items: center; gap: 0.5rem;">
@@ -145,11 +145,11 @@ function showRewardModal(type, isNew = true) {
         modalDesc.innerHTML = `${descPrefix} <strong>Starbucks Hediye Kahve</strong> kullanabilirsiniz!`;
         modalQr.src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=StarbucksReward';
     } else if (type === 'cigkofte') {
-        modalIcon.innerHTML = '🌯';
+        modalIcon.innerHTML = '<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpnkRW3gYTHQ9uecrg9zp98GJKtf7P6rq4JQ&s" style="width:60px;border-radius:8px;">';
         modalDesc.innerHTML = `${descPrefix} <strong>Ömer Aybak Çiğköfte Dürüm</strong> kullanabilirsiniz!`;
         modalQr.src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OmerAybakReward';
     } else if (type === 'pizza') {
-        modalIcon.innerHTML = '<img src="https://cdn-icons-png.flaticon.com/512/1404/1404945.png" style="width:60px;">';
+        modalIcon.innerHTML = '<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLYRs4DEfpobJ8frhUSG3Bej0_iWbWASEnnw&s" style="width:60px;border-radius:8px;">';
         modalDesc.innerHTML = `${descPrefix} <strong>Hero's Pizza Orta Boy Menü</strong> kullanabilirsiniz!`;
         modalQr.src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=HerosPizzaReward';
     }
