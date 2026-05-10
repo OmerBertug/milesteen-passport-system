@@ -1,5 +1,5 @@
 let currentStamps = parseInt(localStorage.getItem('milesteenStamps')) || 0;
-const maxStamps = 2;
+const maxStamps = 5;
 let activities = JSON.parse(localStorage.getItem('milesteenActivities')) || [];
 
 const currentStampsEl = document.getElementById('currentStamps');
@@ -9,9 +9,13 @@ const simulateBtn = document.getElementById('simulateNfcBtn');
 const toast = document.getElementById('toast');
 const rewardModal = document.getElementById('rewardModal');
 const closeModalBtn = document.getElementById('closeModalBtn');
-const viewRewardBtn = document.getElementById('viewRewardBtn');
+const viewStarbucksBtn = document.getElementById('viewStarbucksBtn');
+const viewCigkofteBtn = document.getElementById('viewCigkofteBtn');
 const rewardActionArea = document.getElementById('rewardActionArea');
 const resetBtn = document.getElementById('resetBtn');
+const modalIcon = document.getElementById('modalIcon');
+const modalDesc = document.getElementById('modalDesc');
+const modalQr = document.getElementById('modalQr');
 
 // Saat formatlayıcı
 function getCurrentTime() {
@@ -77,9 +81,14 @@ function initUI() {
         }
     }
     
-    if (currentStamps >= maxStamps) {
-        rewardActionArea.style.display = 'block';
-        simulateBtn.textContent = "Görev Tamamlandı";
+    if (currentStamps >= 2) {
+        rewardActionArea.style.display = 'flex';
+        viewStarbucksBtn.style.display = 'block';
+    }
+    
+    if (currentStamps >= 5) {
+        viewCigkofteBtn.style.display = 'block';
+        simulateBtn.textContent = "Tüm Görevler Tamamlandı";
         simulateBtn.disabled = true;
         simulateBtn.style.opacity = "0.5";
     }
@@ -93,6 +102,20 @@ function showToast() {
     setTimeout(() => {
         toast.classList.remove('show');
     }, 3000);
+}
+
+// Dinamik Modal Gösterimi
+function showRewardModal(type) {
+    if (type === 'starbucks') {
+        modalIcon.innerHTML = '<img src="https://upload.wikimedia.org/wikipedia/en/d/d3/Starbucks_Corporation_Logo_2011.svg" style="width: 60px;">';
+        modalDesc.innerHTML = '2 damgaya ulaştınız ve <strong>Starbucks Hediye Kahve</strong> kazandınız!';
+        modalQr.src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=StarbucksReward';
+    } else if (type === 'cigkofte') {
+        modalIcon.innerHTML = '🌯';
+        modalDesc.innerHTML = '5 damgaya ulaştınız ve <strong>Ömer Aybak Çiğköfte Dürüm</strong> kazandınız!';
+        modalQr.src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OmerAybakReward';
+    }
+    rewardModal.classList.add('show');
 }
 
 // NFC Okutma Simülasyonu
@@ -116,17 +139,27 @@ simulateBtn.addEventListener('click', () => {
         addActivityLog("Galatasaray Lisesi'nde NFC cihazı ile okutuldu. +1 Damga", true);
         showToast();
 
-        // Ödül kontrolü
-        if (currentStamps === maxStamps) {
+        // Ödül kontrolü: Starbucks
+        if (currentStamps === 2) {
             setTimeout(() => {
-                rewardModal.classList.add('show');
+                showRewardModal('starbucks');
                 addActivityLog("Ödül Kazanıldı: Starbucks Kahve!", true);
                 
-                // Ödülü Göster butonunu görünür yap
-                rewardActionArea.style.display = 'block';
+                rewardActionArea.style.display = 'flex';
+                viewStarbucksBtn.style.display = 'block';
+            }, 1000);
+        }
+        
+        // Ödül kontrolü: Çiğköfte
+        if (currentStamps === 5) {
+            setTimeout(() => {
+                showRewardModal('cigkofte');
+                addActivityLog("Ödül Kazanıldı: Ömer Aybak Çiğköfte!", true);
+                
+                viewCigkofteBtn.style.display = 'block';
                 
                 // Simülasyon butonunu devre dışı bırak
-                simulateBtn.textContent = "Görev Tamamlandı";
+                simulateBtn.textContent = "Tüm Görevler Tamamlandı";
                 simulateBtn.disabled = true;
                 simulateBtn.style.opacity = "0.5";
             }, 1000);
@@ -139,10 +172,15 @@ closeModalBtn.addEventListener('click', () => {
     rewardModal.classList.remove('show');
 });
 
-// Kazanılan Ödülü Tekrar Açma
-if (viewRewardBtn) {
-    viewRewardBtn.addEventListener('click', () => {
-        rewardModal.classList.add('show');
+// Kazanılan Ödülleri Tekrar Açma
+if (viewStarbucksBtn) {
+    viewStarbucksBtn.addEventListener('click', () => {
+        showRewardModal('starbucks');
+    });
+}
+if (viewCigkofteBtn) {
+    viewCigkofteBtn.addEventListener('click', () => {
+        showRewardModal('cigkofte');
     });
 }
 
@@ -170,6 +208,9 @@ if (resetBtn) {
             
             // Butonları ve ödül alanını sıfırla
             rewardActionArea.style.display = 'none';
+            viewStarbucksBtn.style.display = 'none';
+            viewCigkofteBtn.style.display = 'none';
+            
             simulateBtn.textContent = "NFC Okutmayı Simüle Et";
             simulateBtn.disabled = false;
             simulateBtn.style.opacity = "1";

@@ -53,11 +53,16 @@
             <div class="reward-box">
                 <div class="reward-header">
                     <div class="reward-info">
-                        <h4>Starbucks Hediye Kahve</h4>
-                        <p>Her 2 katılımda 1 kahve hediye</p>
+                        <h4>Milesteen Hedefleri</h4>
+                        <p style="margin-top: 5px; display: flex; align-items: center; gap: 5px;">
+                            <img src="https://upload.wikimedia.org/wikipedia/en/d/d3/Starbucks_Corporation_Logo_2011.svg" alt="Starbucks" style="width: 16px;"> 2 Damga: Starbucks Kahve
+                        </p>
+                        <p style="margin-top: 3px; display: flex; align-items: center; gap: 5px;">
+                            <span>🌯</span> 5 Damga: Ömer Aybak Çiğköfte
+                        </p>
                     </div>
                     <div class="reward-count">
-                        <span id="currentStamps">0</span> / 2
+                        <span id="currentStamps">0</span> / 5
                     </div>
                 </div>
                 
@@ -68,10 +73,14 @@
                 <div class="stamps-visual">
                     <div class="stamp-slot" id="stamp1"></div>
                     <div class="stamp-slot" id="stamp2"></div>
+                    <div class="stamp-slot" id="stamp3"></div>
+                    <div class="stamp-slot" id="stamp4"></div>
+                    <div class="stamp-slot" id="stamp5"></div>
                 </div>
                 
-                <div id="rewardActionArea" style="display: none; margin-top: 1.5rem; text-align: center;">
-                    <button id="viewRewardBtn" class="btn-primary" style="width: 100%; font-size: 0.9rem;">🎁 Kazanılan Ödülü Göster</button>
+                <div id="rewardActionArea" style="display: none; margin-top: 1.5rem; text-align: center; flex-direction: column; gap: 0.5rem;">
+                    <button id="viewStarbucksBtn" class="btn-primary" style="width: 100%; font-size: 0.9rem; display: none; background-color: #00704A;">☕ Starbucks Ödülünü Göster</button>
+                    <button id="viewCigkofteBtn" class="btn-primary" style="width: 100%; font-size: 0.9rem; display: none; background-color: #e63946;">🌯 Çiğköfte Ödülünü Göster</button>
                 </div>
             </div>
         </section>
@@ -114,11 +123,11 @@
     <!-- Ödül Kazanıldı Modal -->
     <div id="rewardModal" class="modal">
         <div class="modal-content">
-            <div class="modal-icon">☕</div>
+            <div class="modal-icon" id="modalIcon">☕</div>
             <h2>Tebrikler!</h2>
-            <p>2 damgaya ulaştınız ve <strong>Starbucks Hediye Kahve</strong> kazandınız!</p>
+            <p id="modalDesc">Ödül kazandınız!</p>
             <div class="qr-placeholder">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=MilesteenReward" alt="Reward QR">
+                <img id="modalQr" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=MilesteenReward" alt="Reward QR">
                 <p>Kasanıza bu kodu okutun.</p>
             </div>
             <button id="closeModalBtn" class="btn-secondary">Kapat</button>
