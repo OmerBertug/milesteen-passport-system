@@ -1,5 +1,6 @@
-let currentStamps = 0;
+let currentStamps = parseInt(localStorage.getItem('milesteenStamps')) || 0;
 const maxStamps = 2;
+let activities = JSON.parse(localStorage.getItem('milesteenActivities')) || [];
 
 const currentStampsEl = document.getElementById('currentStamps');
 const stampProgressEl = document.getElementById('stampProgress');
@@ -18,7 +19,14 @@ function getCurrentTime() {
 }
 
 // Yeni aktivite ekleme fonksiyonu
-function addActivityLog(message, isPositive = true) {
+function addActivityLog(message, isPositive = true, save = true, overrideTime = null) {
+    const time = overrideTime || `Bugün, ${getCurrentTime()}`;
+    
+    if (save) {
+        activities.unshift({ message, isPositive, time });
+        localStorage.setItem('milesteenActivities', JSON.stringify(activities));
+    }
+
     const li = document.createElement('li');
     li.className = `activity-item ${isPositive ? 'positive' : ''}`;
     
@@ -31,12 +39,51 @@ function addActivityLog(message, isPositive = true) {
         <div class="activity-icon">${iconContent}</div>
         <div class="activity-details">
             <p class="activity-text">${message}</p>
-            <span class="activity-time">Bugün, ${getCurrentTime()}</span>
+            <span class="activity-time">${time}</span>
         </div>
     `;
     
     // Listenin en başına ekle
     activityListEl.insertBefore(li, activityListEl.firstChild);
+}
+
+// Başlangıçta aktiviteleri yükle
+function renderSavedActivities() {
+    activityListEl.innerHTML = ''; 
+    
+    if (activities.length === 0) {
+        // İlk kez giriyorsa varsayılan log
+        addActivityLog("Hesap oluşturuldu ve doğrulandı.", false, true);
+    } else {
+        // Tersten ekliyoruz ki sıralama korunsun
+        const rev = [...activities].reverse();
+        rev.forEach(act => {
+            addActivityLog(act.message, act.isPositive, false, act.time);
+        });
+    }
+}
+
+// Sayfa yüklendiğinde UI'ı ayarla
+function initUI() {
+    currentStampsEl.textContent = currentStamps;
+    stampProgressEl.style.width = `${(currentStamps / maxStamps) * 100}%`;
+    
+    for (let i = 1; i <= currentStamps; i++) {
+        const stampSlot = document.getElementById(`stamp${i}`);
+        if (stampSlot) {
+            stampSlot.classList.add('filled');
+            stampSlot.style.animation = 'none'; // Sayfa yüklenirken pop efekti olmasın
+        }
+    }
+    
+    if (currentStamps >= maxStamps) {
+        rewardActionArea.style.display = 'block';
+        simulateBtn.textContent = "Görev Tamamlandı";
+        simulateBtn.disabled = true;
+        simulateBtn.style.opacity = "0.5";
+    }
+    
+    renderSavedActivities();
 }
 
 // Toast gösterme
@@ -51,6 +98,7 @@ function showToast() {
 simulateBtn.addEventListener('click', () => {
     if (currentStamps < maxStamps) {
         currentStamps++;
+        localStorage.setItem('milesteenStamps', currentStamps);
         
         // Arayüzü güncelle
         currentStampsEl.textContent = currentStamps;
@@ -60,6 +108,7 @@ simulateBtn.addEventListener('click', () => {
         const stampSlot = document.getElementById(`stamp${currentStamps}`);
         if (stampSlot) {
             stampSlot.classList.add('filled');
+            stampSlot.style.animation = ''; // Animasyonu çalıştır
         }
         
         // Log ve Bildirim
@@ -95,3 +144,6 @@ if (viewRewardBtn) {
         rewardModal.classList.add('show');
     });
 }
+
+// Sayfa başlarken
+initUI();
